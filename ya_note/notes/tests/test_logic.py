@@ -27,13 +27,13 @@ class TestNoteCreation(TestCase):
 
     def test_user_can_create_note(self):
         self.client.force_login(self.author)
+        initial_notes_count = Note.objects.count()
         response = self.client.post(self.ADD_NOTE_URL, data=self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
-        expected_notes_count = 1
         current_notes_count = Note.objects.count()
-        self.assertEqual(current_notes_count, expected_notes_count,
+        self.assertEqual(current_notes_count, initial_notes_count,
                          self._get_err_msg(current_notes_count,
-                                           expected_notes_count))
+                                           initial_notes_count))
         new_note = Note.objects.filter(slug=self.form_data['slug']).first()
         self.assertIsNotNone(new_note)
         self.assertEqual(new_note.title, self.form_data['title'])
@@ -119,11 +119,13 @@ class TestNoteEditDelete(TestCase):
         self.assertEqual(self.note.text, note_from_db.text)
 
     def test_author_can_delete_note(self):
+        initial_notes_count = Note.objects.count()
         res = self.author_client.post(self.delete_note_url)
         self.assertRedirects(res, reverse('notes:success'))
-        self.assertEqual(Note.objects.count(), 0)
+        self.assertEqual(Note.objects.count(), initial_notes_count)
 
     def test_other_user_cant_delete_note(self):
+        initial_notes_count = Note.objects.count()
         res = self.reader_client.post(self.delete_note_url)
         self.assertEqual(res.status_code, HTTPStatus.NOT_FOUND)
-        self.assertEqual(Note.objects.count(), 1)
+        self.assertEqual(Note.objects.count(), initial_notes_count)
