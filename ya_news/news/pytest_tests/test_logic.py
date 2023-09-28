@@ -73,7 +73,7 @@ def test_author_can_delete_comment(
         pk=pk_from_comment
     ).exists(), "Комментарий не существует в базе данных"
     initial_comments_count = Comment.objects.count()
-    assert initial_comments_count > 0, "В базе данных нет комментариев"
+    assert initial_comments_count <= 0, "В базе данных нет комментариев"
     url = reverse('news:delete', args=pk_from_comment)
     response = author_client.post(url)
     expected_url = reverse('news:detail', args=pk_from_news) + '#comments'
