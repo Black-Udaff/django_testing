@@ -69,17 +69,20 @@ def test_author_can_edit_comment(
 def test_author_can_delete_comment(
     author_client, pk_from_news, pk_from_comment
 ):
+    assert Comment.objects.filter(
+        pk=pk_from_comment
+    ).exists(), "Комментарий не существует в базе данных"
     initial_comments_count = Comment.objects.count()
-    assert initial_comments_count > 0, 'В базе данных нет комментариев'
+    assert initial_comments_count > 0, "В базе данных нет комментариев"
     url = reverse('news:delete', args=pk_from_comment)
     response = author_client.post(url)
     expected_url = reverse('news:detail', args=pk_from_news) + '#comments'
     assertRedirects(response, expected_url)
     comments_count = Comment.objects.count()
-    expected_comments = 0
-    assert (
-        comments_count == expected_comments
-    ), f'Создано {comments_count} комментариев, ожидалось {expected_comments}'
+    assert comments_count == initial_comments_count - 1, (
+        f'Создано {comments_count} комментариев, ожидалось'
+        f' {initial_comments_count - 1}'
+    )
 
 
 def test_other_user_cant_edit_comment(
