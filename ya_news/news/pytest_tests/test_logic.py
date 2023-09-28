@@ -69,10 +69,12 @@ def test_author_can_edit_comment(
 def test_author_can_delete_comment(
     author_client, pk_from_news, pk_from_comment
 ):
-    url = reverse('news:delete', args=pk_from_comment)
     assert Comment.objects.filter(
         id=pk_from_comment
-    ).exists(), "Комментарий для удаления не найден в БД"
+    ).exists(), 'Комментарий для удаления не найден в БД'
+    initial_comments_count = Comment.objects.count()
+    assert initial_comments_count > 0, 'В базе данных нет комментариев'
+    url = reverse('news:delete', args=pk_from_comment)
     response = author_client.post(url)
     expected_url = reverse('news:detail', args=pk_from_news) + '#comments'
     assertRedirects(response, expected_url)
