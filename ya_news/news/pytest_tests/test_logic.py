@@ -69,9 +69,6 @@ def test_author_can_edit_comment(
 def test_author_can_delete_comment(
     author_client, pk_from_news, pk_from_comment
 ):
-    assert Comment.objects.filter(
-        pk=pk_from_comment
-    ).exists(), "Комментарий не существует в базе данных"
     initial_comments_count = Comment.objects.count()
     assert initial_comments_count > 0, "В базе данных нет комментариев"
     url = reverse('news:delete', args=pk_from_comment)
