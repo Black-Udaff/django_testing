@@ -32,7 +32,7 @@ class TestNoteCreation(TestCase):
         response = self.client.post(self.ADD_NOTE_URL, data=self.form_data)
         self.assertRedirects(response, reverse('notes:success'))
         current_notes_count = Note.objects.count()
-        self.assertEqual(current_notes_count, initial_notes_count,
+        self.assertEqual(current_notes_count, initial_notes_count + 1,
                          self._get_err_msg(current_notes_count,
                                            initial_notes_count))
         new_note = Note.objects.filter(slug=self.form_data['slug']).first()
@@ -123,7 +123,7 @@ class TestNoteEditDelete(TestCase):
         initial_notes_count = Note.objects.count()
         res = self.author_client.post(self.delete_note_url)
         self.assertRedirects(res, reverse('notes:success'))
-        self.assertEqual(Note.objects.count(), initial_notes_count)
+        self.assertEqual(Note.objects.count(), initial_notes_count - 1)
 
     def test_other_user_cant_delete_note(self):
         initial_notes_count = Note.objects.count()
