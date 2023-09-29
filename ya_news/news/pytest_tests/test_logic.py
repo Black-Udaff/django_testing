@@ -15,15 +15,16 @@ pytestmark = pytest.mark.django_db
 
 def test_anonymous_user_cant_create_comment(client, pk_from_news, form_data):
     url = reverse('news:detail', args=pk_from_news)
+    initial_comments_count = Comment.objects.count()
     response = client.post(url, data=form_data)
     login_url = reverse('users:login')
     expected_url = f'{login_url}?next={url}'
     assertRedirects(response, expected_url)
     comments_count = Comment.objects.count()
-    expected_comments = 0
-    assert (
-        comments_count == expected_comments
-    ), f'Создано {comments_count} комментариев, ожидалось {expected_comments}'
+    assert comments_count == initial_comments_count, (
+        f'Создано {comments_count} комментариев, ожидалось'
+        f' {initial_comments_count}'
+    )
 
 
 def test_user_can_create_comment(admin_user, admin_client, news, form_data):
