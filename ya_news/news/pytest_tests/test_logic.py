@@ -34,9 +34,10 @@ def test_user_can_create_comment(admin_user, admin_client, news, form_data):
     expected_url = url + '#comments'
     assertRedirects(response, expected_url)
     final_comments_count = Comment.objects.count()
-    assert (
-        final_comments_count - initial_comments_count == 1
-    ), f'Ожидалось, что будет создан 1 комментарий, но было создано {final_comments_count - initial_comments_count}'
+    assert final_comments_count - initial_comments_count == 1, (
+        'Ожидалось, что будет создан 1 комментарий, но было создано'
+        f' {final_comments_count - initial_comments_count}'
+    )
     new_comment = Comment.objects.get()
     assert new_comment.text == form_data['text']
     assert new_comment.news == news
