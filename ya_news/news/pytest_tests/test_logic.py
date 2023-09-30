@@ -29,14 +29,14 @@ def test_anonymous_user_cant_create_comment(client, pk_from_news, form_data):
 
 def test_user_can_create_comment(admin_user, admin_client, news, form_data):
     url = reverse('news:detail', args=[news.pk])
+    initial_comments_count = Comment.objects.count()
     response = admin_client.post(url, data=form_data)
     expected_url = url + '#comments'
     assertRedirects(response, expected_url)
-    comments_count = Comment.objects.count()
-    expected_comments = 1
+    final_comments_count = Comment.objects.count()
     assert (
-        comments_count == expected_comments
-    ), f'Создано {comments_count} комментариев, ожидалось {expected_comments}'
+        final_comments_count - initial_comments_count == 1
+    ), f'Ожидалось, что будет создан 1 комментарий, но было создано {final_comments_count - initial_comments_count}'
     new_comment = Comment.objects.get()
     assert new_comment.text == form_data['text']
     assert new_comment.news == news
